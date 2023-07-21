@@ -1,0 +1,76 @@
+ADC: 带进位带加法
+ADC <Xd>, <Xn>, <Xm>
+
+bits(datasize) result;
+bits(datasize) operand1 = X[n, datasize];
+bits(datasize) operand2 = X[m, datasize];
+(result, -) = AddWithCarry(operand1, operand2, PSTATE.C);
+X[d, datasize] = result;
+
+ADCS: 保存状态的带进位加法
+ADCS <Xd>, <Xn>, <Xm>
+
+bits(datasize) result;
+bits(datasize) operand1 = X[n, datasize];
+bits(datasize) operand2 = X[m, datasize];
+bits(4) nzcv;
+(result, nzcv) = AddWithCarry(operand1, operand2, PSTATE.C);
+PSTATE.<N,Z,C,V> = nzcv;
+X[d, datasize] = result;
+
+ADD: 加法，扩展寄存器
+ADD <Xd|SP>, <Xn|SP>, <R><m>{, <extend> {#<amount>}}
+
+bits(datasize) result;
+bits(datasize) operand1 = if n == 31 then SP[]<datasize-1:0> else X[n, datasize];
+bits(datasize) operand2 = ExtendReg(m, extend_type, shift, datasize);
+(result, -) = AddWithCarry(operand1, operand2, '0');
+if d == 31 then
+    SP[] = ZeroExtend(result, 64);
+else
+    X[d, datasize] = result;
+
+ADD: 立即数加法
+ADD <Xd|SP>, <Xn|SP>, #<imm>{, <shift>}
+
+bits(datasize) result;
+bits(datasize) operand1 = if n == 31 then SP[]<datasize-1:0> else X[n, datasize];
+(result, -) = AddWithCarry(operand1, imm, '0');
+if d == 31 then
+    SP[] = ZeroExtend(result, 64);
+else
+    X[d, datasize] = result;
+
+ADD: 移位寄存器加法
+ADD <Xd>, <Xn>, <Xm>{, <shift> #<amount>}
+
+bits(datasize) result;
+bits(datasize) operand1 = X[n, datasize];
+bits(datasize) operand2 = ShiftReg(m, shift_type, shift_amount, datasize);
+(result, -) = AddWithCarry(operand1, operand2, '0');
+X[d, datasize] = result;
+
+ADDG: 带tag的加法
+ADDG <Xd|SP>, <Xn|SP>, #<uimm6>, #<uimm4>
+
+bits(64) operand1 = if n == 31 then SP[] else X[n, 64];
+bits(4) start_tag = AArch64.AllocationTagFromAddress(operand1);
+bits(16) exclude = GCR_EL1.Exclude;
+bits(64) result;
+bits(4) rtag;
+
+if AArch64.AllocationTagAccessIsEnabled(PSTATE.EL) then
+    rtag = AArch64.ChooseNonExcludedTag(start_tag, uimm4, exclude);
+else
+    rtag = '0000';
+(result, -) = AddWithCarry(operand1, offset, '0');
+result = AArch64.AddressWithAllocationTag(result, rtag);
+if d == 31 then
+    SP[] = result;
+else
+    X[d, 64] = result;
+
+ADDS: 影响状态的加法，同ADD的三种情况
+ADDS <Xd>, <Xn|SP>, <R><m>{, <extend> {#<amount>}}
+ADDS <Xd>, <Xn|SP>, #<imm>{, <shift>}
+ADDS <Xd>, <Xn>, <Xm>{, <shift> #<amount>}

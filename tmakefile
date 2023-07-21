@@ -1,0 +1,20 @@
+CC = gcc
+CFLAG = -lm -ly -ll -lz3
+DEBUG = -ggdb3
+TARGET = test
+
+pl: y.tab.c y.tab.h lex.yy.c cond_s.o
+	$(CC) -o pl y.tab.c cond_s.o $(FLAG) $(DEBUG)
+
+y.tab.c y.tab.h: $(test).y
+	yacc -v -d $(test).y
+
+lex.yy.c: $(test).l y.tab.h cond_s.h
+	lex $(test).l
+
+cond_s : cond_s.h cond_s.c
+	$(CC) -c -o cond_s.o cond_s.c $(DEBUG)
+
+.PHONY : clean
+clean : 
+	rm y.tab.c y.tab.h lex.yy.c cond_s.o pl 

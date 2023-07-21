@@ -1,38 +1,39 @@
+Terminals unused in grammar
+
+   COND
+   SUFFIX
+
+
 Grammar
 
     0 $accept: lang $end
 
-    1 lang: inst lang
+    1 lang: inst DELIM lang
     2     | inst
 
-    3 inst: inst_op
-    4     | inst_op op_1
-    5     | inst_op op_1 SEP op_2
-    6     | inst_op op_1 SEP op_2 SEP op_3
+    3 inst: OPCODE
+    4     | OPCODE op_1
+    5     | OPCODE op_1 SEP op_2
+    6     | OPCODE op_1 SEP op_2 SEP op_3
 
-    7 inst_op: OPCODE
-    8        | OPCODE COND
-    9        | OPCODE COND SUFFIX
-   10        | OPCODE SUFFIX
+    7 op_1: RE
 
-   11 op_1: RD
+    8 op_2: RE
 
-   12 op_2: RN
-
-   13 op_3: OP2
+    9 op_3: OP2
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-OPCODE (258) 7 8 9 10
-RD (259) 11
-RN (260) 12
-OP2 (261) 13
-COND (262) 8 9
-SUFFIX (263) 9 10
-SEP (264) 5 6
+OPCODE (258) 3 4 5 6
+RE (259) 7 8
+OP2 (260) 9
+COND (261)
+SUFFIX (262)
+SEP (263) 5 6
+DELIM (264) 1
 
 
 Nonterminals, with rules where they appear
@@ -43,176 +44,142 @@ lang (11)
     on left: 1 2, on right: 0 1
 inst (12)
     on left: 3 4 5 6, on right: 1 2
-inst_op (13)
-    on left: 7 8 9 10, on right: 3 4 5 6
-op_1 (14)
-    on left: 11, on right: 4 5 6
-op_2 (15)
-    on left: 12, on right: 5 6
-op_3 (16)
-    on left: 13, on right: 6
+op_1 (13)
+    on left: 7, on right: 4 5 6
+op_2 (14)
+    on left: 8, on right: 5 6
+op_3 (15)
+    on left: 9, on right: 6
 
 
-state 0
+State 0
 
     0 $accept: . lang $end
 
     OPCODE  shift, and go to state 1
 
-    lang     go to state 2
-    inst     go to state 3
-    inst_op  go to state 4
+    lang  go to state 2
+    inst  go to state 3
 
 
-state 1
+State 1
 
-    7 inst_op: OPCODE .
-    8        | OPCODE . COND
-    9        | OPCODE . COND SUFFIX
-   10        | OPCODE . SUFFIX
+    3 inst: OPCODE .
+    4     | OPCODE . op_1
+    5     | OPCODE . op_1 SEP op_2
+    6     | OPCODE . op_1 SEP op_2 SEP op_3
 
-    COND    shift, and go to state 5
-    SUFFIX  shift, and go to state 6
-
-    $default  reduce using rule 7 (inst_op)
-
-
-state 2
-
-    0 $accept: lang . $end
-
-    $end  shift, and go to state 7
-
-
-state 3
-
-    1 lang: inst . lang
-    2     | inst .
-
-    OPCODE  shift, and go to state 1
-
-    $default  reduce using rule 2 (lang)
-
-    lang     go to state 8
-    inst     go to state 3
-    inst_op  go to state 4
-
-
-state 4
-
-    3 inst: inst_op .
-    4     | inst_op . op_1
-    5     | inst_op . op_1 SEP op_2
-    6     | inst_op . op_1 SEP op_2 SEP op_3
-
-    RD  shift, and go to state 9
+    RE  shift, and go to state 4
 
     $default  reduce using rule 3 (inst)
 
-    op_1  go to state 10
+    op_1  go to state 5
 
 
-state 5
+State 2
 
-    8 inst_op: OPCODE COND .
-    9        | OPCODE COND . SUFFIX
+    0 $accept: lang . $end
 
-    SUFFIX  shift, and go to state 11
-
-    $default  reduce using rule 8 (inst_op)
+    $end  shift, and go to state 6
 
 
-state 6
+State 3
 
-   10 inst_op: OPCODE SUFFIX .
+    1 lang: inst . DELIM lang
+    2     | inst .
 
-    $default  reduce using rule 10 (inst_op)
+    DELIM  shift, and go to state 7
+
+    $default  reduce using rule 2 (lang)
 
 
-state 7
+State 4
+
+    7 op_1: RE .
+
+    $default  reduce using rule 7 (op_1)
+
+
+State 5
+
+    4 inst: OPCODE op_1 .
+    5     | OPCODE op_1 . SEP op_2
+    6     | OPCODE op_1 . SEP op_2 SEP op_3
+
+    SEP  shift, and go to state 8
+
+    $default  reduce using rule 4 (inst)
+
+
+State 6
 
     0 $accept: lang $end .
 
     $default  accept
 
 
-state 8
+State 7
 
-    1 lang: inst lang .
+    1 lang: inst DELIM . lang
+
+    OPCODE  shift, and go to state 1
+
+    lang  go to state 9
+    inst  go to state 3
+
+
+State 8
+
+    5 inst: OPCODE op_1 SEP . op_2
+    6     | OPCODE op_1 SEP . op_2 SEP op_3
+
+    RE  shift, and go to state 10
+
+    op_2  go to state 11
+
+
+State 9
+
+    1 lang: inst DELIM lang .
 
     $default  reduce using rule 1 (lang)
 
 
-state 9
+State 10
 
-   11 op_1: RD .
+    8 op_2: RE .
 
-    $default  reduce using rule 11 (op_1)
+    $default  reduce using rule 8 (op_2)
 
 
-state 10
+State 11
 
-    4 inst: inst_op op_1 .
-    5     | inst_op op_1 . SEP op_2
-    6     | inst_op op_1 . SEP op_2 SEP op_3
+    5 inst: OPCODE op_1 SEP op_2 .
+    6     | OPCODE op_1 SEP op_2 . SEP op_3
 
     SEP  shift, and go to state 12
-
-    $default  reduce using rule 4 (inst)
-
-
-state 11
-
-    9 inst_op: OPCODE COND SUFFIX .
-
-    $default  reduce using rule 9 (inst_op)
-
-
-state 12
-
-    5 inst: inst_op op_1 SEP . op_2
-    6     | inst_op op_1 SEP . op_2 SEP op_3
-
-    RN  shift, and go to state 13
-
-    op_2  go to state 14
-
-
-state 13
-
-   12 op_2: RN .
-
-    $default  reduce using rule 12 (op_2)
-
-
-state 14
-
-    5 inst: inst_op op_1 SEP op_2 .
-    6     | inst_op op_1 SEP op_2 . SEP op_3
-
-    SEP  shift, and go to state 15
 
     $default  reduce using rule 5 (inst)
 
 
-state 15
+State 12
 
-    6 inst: inst_op op_1 SEP op_2 SEP . op_3
+    6 inst: OPCODE op_1 SEP op_2 SEP . op_3
 
-    OP2  shift, and go to state 16
+    OP2  shift, and go to state 13
 
-    op_3  go to state 17
-
-
-state 16
-
-   13 op_3: OP2 .
-
-    $default  reduce using rule 13 (op_3)
+    op_3  go to state 14
 
 
-state 17
+State 13
 
-    6 inst: inst_op op_1 SEP op_2 SEP op_3 .
+    9 op_3: OP2 .
+
+    $default  reduce using rule 9 (op_3)
+
+
+State 14
+
+    6 inst: OPCODE op_1 SEP op_2 SEP op_3 .
 
     $default  reduce using rule 6 (inst)

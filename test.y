@@ -6,12 +6,16 @@ void yyerror(char*);
 void debug(char*);
 
 %}
-
-%token INST
+%union{
+    char* str;
+}
+%token <str> INST
+%token SEP
+%type <str> lang
 
 %%
-lang :  INST lang       { }
-| inst                  { printf("%s\n",$1); }
+lang : INST SEP lang             { printf("match inst  : %s\n", $1); }
+| INST                           { printf("match inste : %s\n", $1); }                              
 ;
 %%
 int main()
@@ -24,9 +28,6 @@ int main()
         fscanf(fp,"%s",name);
         printf("read from: %s(%zu)\n", name, strlen(name));
         yyin=fopen(name,"r");
-        // set_fvalid();
-        // yyin=fopen("input.p","r");
-
         yyparse();
         fclose(yyin);
         // process();

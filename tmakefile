@@ -6,11 +6,11 @@ TARGET = test
 pl: y.tab.c y.tab.h lex.yy.c cond_s.o
 	$(CC) -o pl y.tab.c cond_s.o $(FLAG) $(DEBUG)
 
-y.tab.c y.tab.h: $(test).y
-	yacc -v -d $(test).y
+y.tab.c y.tab.h: $(TARGET).y
+	yacc -v -d $(TARGET).y
 
-lex.yy.c: $(test).l y.tab.h cond_s.h
-	lex $(test).l
+lex.yy.c: $(TARGET).l y.tab.h cond_s.h
+	lex $(TARGET).l
 
 cond_s : cond_s.h cond_s.c
 	$(CC) -c -o cond_s.o cond_s.c $(DEBUG)

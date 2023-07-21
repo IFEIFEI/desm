@@ -11,35 +11,32 @@ void debug(char*);
     int cond_t;
     int suffix_t;
 }
-%token <str> OPCODE RD RN OP2
+%token <str> OPCODE RE OP2
 %token <cond_t> COND
 %token <suffix_t> SUFFIX
 %token SEP
+%token DELIM
+
+%type <str> inst lang op_1 op_2 op_3
 
 %%
-lang :  inst lang      { printf("lang inst\n"); }
-| inst                  { printf("inst\n"); }
+lang :  inst DELIM lang      {  }
+| inst                       { }
 ;
 
-inst : inst_op                      { printf("inst0\n"); } 
-| inst_op op_1                      { printf("inst1\n"); }
-| inst_op op_1 SEP op_2             { printf("inst2\n"); }
-| inst_op op_1 SEP op_2 SEP op_3    { printf("inst3\n"); }
+inst : OPCODE                   { printf("match opcode: %s\n",$1); }
+| OPCODE op_1                   { printf("match opcode1:%s %s\n",$1,$2); /*printf("match opcode3:%s %s %s %s\n", $1, $2, $4, $6);*/ }
+| OPCODE op_1 SEP op_2          { printf("match opcode2:%s %s %s\n",$1,$2,$4); }
+| OPCODE op_1 SEP op_2 SEP op_3 { printf("match opcode3:%s %s %s %s\n",$1,$2,$4,$6); }
 ;
 
-inst_op : OPCODE                    { printf("op(%s)\t", $1); }
-| OPCODE COND                       { printf("cond\t"); }
-| OPCODE COND SUFFIX                { printf("cond\t suff\t"); }
-| OPCODE SUFFIX                     { printf("suff\t"); }
+op_1 : RE                           {}
 ;
 
-op_1 : RD                           { printf("rd\t"); }
+op_2 : RE                           {}
 ;
 
-op_2 : RN                           { printf("rn\t"); }
-;
-
-op_3 : OP2                          { printf("op2\n"); }
+op_3 : OP2                          {}
 ;
 
 

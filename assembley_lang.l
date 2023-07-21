@@ -5,41 +5,39 @@
 #include <stdio.h>
 #include <string.h>
 %}
-numbers     ([0-9])+
+numbers     ([0-9])*
 imm         #{numbers}
 opname      {ADD}
-cond        [EQ|NE|CS|CC|MI|PL|VS|VC|HI|LS|GE|LT|GT|LE|AL]
-suffix      S
+cond        (EQ)|(NE)|(CS)|(CC)|(MI)|(PL)|(VS)|(VC)|(HI)|(LS)|(GE)|(LT)|(GT)|(LE)|(AL)
+suffix      S|s
 opnamec     {opname}{cond}
 opnames     {opname}{suffix}
 opnamecs    {opname}{cond}{suffix}
-re          [RX]{numbers}
-rd          {re}
-rn          {re}
+re          [RrXx]{numbers}
 shift       ASR#{imm}|LSL#{imm}|LSR#{imm}|ROR#{imm}|RRS
 op2         {imm}|({re}(,{shift}{0,1}))
 
 ADD         [Aa][Dd][Dd]
 
-delim       [ \t]
-sep         ,
-whitespace  {delim}+
+delim       \n
+sep         ","
+ws          [ \t]
+whitespace  {ws}*
+
 lmp         \[
 lsp         \(
 rmp         \]
 rsp         \)
 undefined   .*
 %%
-{opnamecs}    { yylval.str = strdup(yytext); yylval.suffix_t = parse_s(yytext); yylval.cond_t = parse_cond_s(yytext,1); return OPCODE; }
-{opnames}     { yylval.str = strdup(yytext); yylval.suffix_t = parse_s(yytext); return OPCODE; }
-{opnamec}     { yylval.str = strdup(yytext); yylval.cond_t = parse_cond(yytext); return OPCODE; }
+{whitespace}  { }
+{delim}       { return DELIM; }
+{opnamecs}    { yylval.str = strdup(yytext); return OPCODE; }
+{opnamec}     { yylval.str = strdup(yytext); return OPCODE; }
+{opnames}     { yylval.str = strdup(yytext); return OPCODE; }
 {opname}      { yylval.str = strdup(yytext); return OPCODE; }
-
-
-
-{rd}          { return RD; }
-{rn}          { return RN; }
-{op2}         { return OP2; }
+{re}|(RR)          { yylval.str = strdup(yytext); return RE; }
 {sep}         { return SEP; }
-\n            {  }
+{op2}         { yylval.str = strdup(yytext); return OP2; }
+
 %%

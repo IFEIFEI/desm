@@ -48,20 +48,36 @@ extern int yydebug;
     OPCODE = 258,
     RE = 259,
     OP2 = 260,
-    COND = 261,
-    SUFFIX = 262,
-    SEP = 263,
-    DELIM = 264
+    SHIFT = 261,
+    SEP = 262,
+    IMM = 263,
+    LBP = 264,
+    LMP = 265,
+    LSP = 266,
+    RBP = 267,
+    RMP = 268,
+    RSP = 269,
+    CBP = 270,
+    CON = 271,
+    DELIM = 272
   };
 #endif
 /* Tokens.  */
 #define OPCODE 258
 #define RE 259
 #define OP2 260
-#define COND 261
-#define SUFFIX 262
-#define SEP 263
-#define DELIM 264
+#define SHIFT 261
+#define SEP 262
+#define IMM 263
+#define LBP 264
+#define LMP 265
+#define LSP 266
+#define RBP 267
+#define RMP 268
+#define RSP 269
+#define CBP 270
+#define CON 271
+#define DELIM 272
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -71,10 +87,8 @@ union YYSTYPE
 #line 9 "assembley_lang.y" /* yacc.c:1909  */
 
     char* str;
-    int cond_t;
-    int suffix_t;
 
-#line 78 "y.tab.h" /* yacc.c:1909  */
+#line 92 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

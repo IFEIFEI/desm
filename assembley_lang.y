@@ -8,19 +8,15 @@ void debug(char*);
 %}
 %union{
     char* str;
-    int cond_t;
-    int suffix_t;
 }
-%token <str> OPCODE RE OP2
-%token <cond_t> COND
-%token <suffix_t> SUFFIX
-%token SEP
+%token <str> OPCODE RE OP2 SHIFT
+%token SEP IMM LBP LMP LSP RBP RMP RSP CBP CON
 %token DELIM
 
-%type <str> inst lang op_1 op_2 op_3
+%type <str> inst lang op_1 op_2 op_3 addr
 
 %%
-lang :  inst DELIM lang      {  }
+lang :  inst DELIM lang      { }
 | inst                       { }
 ;
 
@@ -33,12 +29,21 @@ inst : OPCODE                   { printf("match opcode: %s\n",$1); }
 op_1 : RE                           {}
 ;
 
-op_2 : RE                           {}
+op_2 : addr
 ;
 
 op_3 : OP2                          {}
 ;
 
+addr : IMM
+| RE
+| LMP RE RMP
+| LMP RE SEP IMM RMP
+| LMP RE SEP IMM RMP CBP
+| LMP RE RMP SEP IMM
+| LMP RE SEP RE RMP
+| LBP RE CON RE RBP
+;
 
 %%
 int main()

@@ -1,5 +1,6 @@
 %{
 #include "lex.yy.c"
+#include "inst.h"
 
 int yyparse(void);
 void yyerror(char*);
@@ -21,7 +22,7 @@ lang :  inst DELIM lang      { }
 ;
 
 inst : OPCODE                   { printf("match opcode: %s\n",$1); }
-| OPCODE op_1                   { printf("match opcode1:%s %s\n",$1,$2); /*printf("match opcode3:%s %s %s %s\n", $1, $2, $4, $6);*/ }
+| OPCODE op_1                   { printf("match opcode1:%s %s\n",$1,$2); gen_add();/*printf("match opcode3:%s %s %s %s\n", $1, $2, $4, $6);*/ }
 | OPCODE op_1 SEP op_2          { printf("match opcode2:%s %s %s\n",$1,$2,$4); }
 | OPCODE op_1 SEP op_2 SEP op_3 { printf("match opcode3:%s %s %s %s\n",$1,$2,$4,$6); }
 ;

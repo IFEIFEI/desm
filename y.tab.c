@@ -65,13 +65,14 @@
 #line 1 "assembley_lang.y" /* yacc.c:339  */
 
 #include "lex.yy.c"
+#include "inst.h"
 
 int yyparse(void);
 void yyerror(char*);
 void debug(char*);
 
 
-#line 75 "y.tab.c" /* yacc.c:339  */
+#line 76 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -145,11 +146,11 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 9 "assembley_lang.y" /* yacc.c:355  */
+#line 10 "assembley_lang.y" /* yacc.c:355  */
 
     char* str;
 
-#line 153 "y.tab.c" /* yacc.c:355  */
+#line 154 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -166,7 +167,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 170 "y.tab.c" /* yacc.c:358  */
+#line 171 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -465,8 +466,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    19,    19,    20,    23,    24,    25,    26,    29,    32,
-      35,    38,    39,    40,    41,    42,    43,    44,    45
+       0,    20,    20,    21,    24,    25,    26,    27,    30,    33,
+      36,    39,    40,    41,    42,    43,    44,    45,    46
 };
 #endif
 
@@ -1251,55 +1252,55 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 19 "assembley_lang.y" /* yacc.c:1646  */
+#line 20 "assembley_lang.y" /* yacc.c:1646  */
     { }
-#line 1257 "y.tab.c" /* yacc.c:1646  */
+#line 1258 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 20 "assembley_lang.y" /* yacc.c:1646  */
+#line 21 "assembley_lang.y" /* yacc.c:1646  */
     { }
-#line 1263 "y.tab.c" /* yacc.c:1646  */
+#line 1264 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 23 "assembley_lang.y" /* yacc.c:1646  */
+#line 24 "assembley_lang.y" /* yacc.c:1646  */
     { printf("match opcode: %s\n",(yyvsp[0].str)); }
-#line 1269 "y.tab.c" /* yacc.c:1646  */
+#line 1270 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 24 "assembley_lang.y" /* yacc.c:1646  */
-    { printf("match opcode1:%s %s\n",(yyvsp[-1].str),(yyvsp[0].str)); /*printf("match opcode3:%s %s %s %s\n", $1, $2, $4, $6);*/ }
-#line 1275 "y.tab.c" /* yacc.c:1646  */
+#line 25 "assembley_lang.y" /* yacc.c:1646  */
+    { printf("match opcode1:%s %s\n",(yyvsp[-1].str),(yyvsp[0].str)); gen_add();/*printf("match opcode3:%s %s %s %s\n", $1, $2, $4, $6);*/ }
+#line 1276 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 25 "assembley_lang.y" /* yacc.c:1646  */
+#line 26 "assembley_lang.y" /* yacc.c:1646  */
     { printf("match opcode2:%s %s %s\n",(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[0].str)); }
-#line 1281 "y.tab.c" /* yacc.c:1646  */
+#line 1282 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 26 "assembley_lang.y" /* yacc.c:1646  */
+#line 27 "assembley_lang.y" /* yacc.c:1646  */
     { printf("match opcode3:%s %s %s %s\n",(yyvsp[-5].str),(yyvsp[-4].str),(yyvsp[-2].str),(yyvsp[0].str)); }
-#line 1287 "y.tab.c" /* yacc.c:1646  */
+#line 1288 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 29 "assembley_lang.y" /* yacc.c:1646  */
+#line 30 "assembley_lang.y" /* yacc.c:1646  */
     {}
-#line 1293 "y.tab.c" /* yacc.c:1646  */
+#line 1294 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 35 "assembley_lang.y" /* yacc.c:1646  */
+#line 36 "assembley_lang.y" /* yacc.c:1646  */
     {}
-#line 1299 "y.tab.c" /* yacc.c:1646  */
+#line 1300 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1303 "y.tab.c" /* yacc.c:1646  */
+#line 1304 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1527,7 +1528,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 48 "assembley_lang.y" /* yacc.c:1906  */
+#line 49 "assembley_lang.y" /* yacc.c:1906  */
 
 int main()
 {

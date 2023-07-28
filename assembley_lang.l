@@ -7,20 +7,21 @@
 %}
 numbers     ([0-9])+
 imm         #{numbers}
-opname      {ADD}
-cond        (EQ)|(NE)|(CS)|(CC)|(MI)|(PL)|(VS)|(VC)|(HI)|(LS)|(GE)|(LT)|(GT)|(LE)|(AL)
+opname      ({ADD})|({ABS})
+cond        (?i:(EQ)|(NE)|(CS)|(CC)|(MI)|(PL)|(VS)|(VC)|(HI)|(LS)|(GE)|(LT)|(GT)|(LE)|(AL))
 suffix      S|s
 opnamec     {opname}{cond}
 opnames     {opname}{suffix}
 opnamecs    {opname}{cond}{suffix}
 reindex     ([0-9])|([12][0-9])|(3[0-1])
 re          [RrXx]{reindex}
-shiftcode   (ASR)|(LSL)|(LSR)|(ROR)
-shift       ({shiftcode}{ws}+#{imm})|(RRS)
+shiftcode   (?i:(ASR)|(LSL)|(LSR)|(ROR))
+shift       ({shiftcode}{ws}+#{imm})|(?i:RRS)
 op2         {imm}|({re}(,{shift})?)
 
-ADD         [Aa][Dd][Dd]
-
+ABS         (?i:abs)
+ADD         (?i:add)
+         
 delim       \n
 sep         [,]
 whitespace  [ \t]

@@ -66,13 +66,17 @@
 
 #include "lex.yy.c"
 #include "inst.h"
+#include "inst_table.h"
 
 int yyparse(void);
 void yyerror(char*);
 void debug(char*);
+void init_context();
+
+struct inst_table *ist_table;
 
 
-#line 76 "y.tab.c" /* yacc.c:339  */
+#line 80 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -146,11 +150,11 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 10 "assembley_lang.y" /* yacc.c:355  */
+#line 14 "assembley_lang.y" /* yacc.c:355  */
 
     char* str;
 
-#line 154 "y.tab.c" /* yacc.c:355  */
+#line 158 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -167,7 +171,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 171 "y.tab.c" /* yacc.c:358  */
+#line 175 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -466,8 +470,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    20,    20,    21,    24,    25,    26,    27,    30,    33,
-      36,    39,    40,    41,    42,    43,    44,    45,    46
+       0,    24,    24,    25,    28,    29,    30,    31,    34,    37,
+      40,    43,    44,    45,    46,    47,    48,    49,    50
 };
 #endif
 
@@ -1252,55 +1256,55 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 20 "assembley_lang.y" /* yacc.c:1646  */
+#line 24 "assembley_lang.y" /* yacc.c:1646  */
     { }
-#line 1258 "y.tab.c" /* yacc.c:1646  */
+#line 1262 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 21 "assembley_lang.y" /* yacc.c:1646  */
+#line 25 "assembley_lang.y" /* yacc.c:1646  */
     { }
-#line 1264 "y.tab.c" /* yacc.c:1646  */
+#line 1268 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 24 "assembley_lang.y" /* yacc.c:1646  */
+#line 28 "assembley_lang.y" /* yacc.c:1646  */
     { printf("match opcode: %s\n",(yyvsp[0].str)); }
-#line 1270 "y.tab.c" /* yacc.c:1646  */
+#line 1274 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 25 "assembley_lang.y" /* yacc.c:1646  */
-    { printf("match opcode1:%s %s\n",(yyvsp[-1].str),(yyvsp[0].str)); gen_add();/*printf("match opcode3:%s %s %s %s\n", $1, $2, $4, $6);*/ }
-#line 1276 "y.tab.c" /* yacc.c:1646  */
+#line 29 "assembley_lang.y" /* yacc.c:1646  */
+    { printf("match opcode1:%s %s\n",(yyvsp[-1].str),(yyvsp[0].str)); if(check_inst(ist_table, (yyvsp[-1].str))) gen_add();/*printf("match opcode3:%s %s %s %s\n", $1, $2, $4, $6);*/ }
+#line 1280 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 26 "assembley_lang.y" /* yacc.c:1646  */
+#line 30 "assembley_lang.y" /* yacc.c:1646  */
     { printf("match opcode2:%s %s %s\n",(yyvsp[-3].str),(yyvsp[-2].str),(yyvsp[0].str)); }
-#line 1282 "y.tab.c" /* yacc.c:1646  */
+#line 1286 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 27 "assembley_lang.y" /* yacc.c:1646  */
+#line 31 "assembley_lang.y" /* yacc.c:1646  */
     { printf("match opcode3:%s %s %s %s\n",(yyvsp[-5].str),(yyvsp[-4].str),(yyvsp[-2].str),(yyvsp[0].str)); }
-#line 1288 "y.tab.c" /* yacc.c:1646  */
+#line 1292 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 30 "assembley_lang.y" /* yacc.c:1646  */
+#line 34 "assembley_lang.y" /* yacc.c:1646  */
     {}
-#line 1294 "y.tab.c" /* yacc.c:1646  */
+#line 1298 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 36 "assembley_lang.y" /* yacc.c:1646  */
+#line 40 "assembley_lang.y" /* yacc.c:1646  */
     {}
-#line 1300 "y.tab.c" /* yacc.c:1646  */
+#line 1304 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1304 "y.tab.c" /* yacc.c:1646  */
+#line 1308 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1528,13 +1532,14 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 49 "assembley_lang.y" /* yacc.c:1906  */
+#line 53 "assembley_lang.y" /* yacc.c:1906  */
 
 int main()
 {
     FILE *fp;
     char name[15];
     fp = fopen("input_file","r");
+    init_context();
     while(!feof(fp))
     {
         fscanf(fp,"%s",name);
@@ -1550,6 +1555,12 @@ int main()
     fclose(fp);
     return 0;
 }
+
+void init_context()
+{
+    ist_table = gen_inst_table();
+}
+
 void yyerror(char *s)
 {
     fprintf(stderr,"%s\n",s);

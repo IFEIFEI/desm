@@ -2,9 +2,10 @@ CC = gcc
 CFLAG = -lm -ly -ll -lz3
 DEBUG = -ggdb3
 INST = add
+UTILITY = inst_table
 
-pl: y.tab.c y.tab.h lex.yy.c cond_s.o $(INST).o
-	$(CC) -o pl y.tab.c cond_s.o  $(INST).o $(FLAG) $(DEBUG)
+pl: y.tab.c y.tab.h lex.yy.c cond_s.o $(INST).o $(UTILITY).o
+	$(CC) -o pl y.tab.c cond_s.o  $(INST).o $(UTILITY).o $(FLAG) $(DEBUG)
 
 y.tab.c y.tab.h: assembley_lang.y
 	yacc -v -d assembley_lang.y
@@ -17,6 +18,9 @@ cond_s : cond_s.h cond_s.c
 
 $(INST).o: $(INST).h $(INST).c
 	$(CC) -c -o $(INST).o $(INST).c $(DEBUG)
+
+$(UTILITY).o: $(UTILITY).h $(UTILITY).c
+	$(CC) -c -o $(UTILITY).o $(UTILITY).c $(DEBUG)
 
 .PHONY : clean
 clean : 

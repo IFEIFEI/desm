@@ -1,10 +1,14 @@
 %{
 #include "lex.yy.c"
 #include "inst.h"
+#include "inst_table.h"
 
 int yyparse(void);
 void yyerror(char*);
 void debug(char*);
+void init_context();
+
+struct inst_table *ist_table;
 
 %}
 %union{
@@ -22,7 +26,7 @@ lang :  inst DELIM lang      { }
 ;
 
 inst : OPCODE                   { printf("match opcode: %s\n",$1); }
-| OPCODE op_1                   { printf("match opcode1:%s %s\n",$1,$2); gen_add();/*printf("match opcode3:%s %s %s %s\n", $1, $2, $4, $6);*/ }
+| OPCODE op_1                   { printf("match opcode1:%s %s\n",$1,$2); if(check_inst(ist_table, $1)) gen_add();/*printf("match opcode3:%s %s %s %s\n", $1, $2, $4, $6);*/ }
 | OPCODE op_1 SEP op_2          { printf("match opcode2:%s %s %s\n",$1,$2,$4); }
 | OPCODE op_1 SEP op_2 SEP op_3 { printf("match opcode3:%s %s %s %s\n",$1,$2,$4,$6); }
 ;
@@ -52,6 +56,7 @@ int main()
     FILE *fp;
     char name[15];
     fp = fopen("input_file","r");
+    init_context();
     while(!feof(fp))
     {
         fscanf(fp,"%s",name);
@@ -67,6 +72,12 @@ int main()
     fclose(fp);
     return 0;
 }
+
+void init_context()
+{
+    ist_table = gen_inst_table();
+}
+
 void yyerror(char *s)
 {
     fprintf(stderr,"%s\n",s);

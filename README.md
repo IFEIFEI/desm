@@ -6,6 +6,7 @@
 - 指令的名称、指令后缀
 - 参数识别（寄存器，立即数，变址寻址）
 - 指令表的构造，用来寻找对应指令的操作函数
+- 对相应的指令调用isabella生成函数
 
 证明部分
 - 对应汇编指令的
@@ -34,6 +35,9 @@ G -- 状态替换 --> G
 	 + 识别汇编指令，将汇编指令的语义抽取出来
 	 + 将汇编指令转换为对应的isabella代码里的状态转换函数
 
+--------
+## 详细设计说明
+
 ### 指令识别
 将整个汇编文件按行分割识别
 
@@ -56,13 +60,97 @@ G -- 状态替换 --> G
 - 根据指令后缀是否修改标识位
 
 语意分析，汇编模型的状态改变，并调用对应的函数（A）生成isabella代码的状态转移函数，调用生成函数（B）生成状态转移的证明，自动分配一个状态累积函数
-
-状态转移函数，isabella中一个state到另一个state的转变函数。
+> A和B的函数需要对每一条指令都单独设计
+>> 状态转移函数，isabella中一个state到另一个state的转变函数。
 辅助状态转移证明，用来规约原来的state和转移函数生成的状态之间的关系，这个lemma是可以自动证明通过的，用来说明生成的转移函数是正确的
-状态累积函数，用来累积状态的变化，用来证明一些整体的性质
+>> 状态累积函数，用来累积状态的变化，用来证明一些整体的性质
 
-A和B的函数需要对每一条指令都单独设计
+辅助lemma证明单独的状态转移的正确性比较简单，可以直接在规约程序中用C语言去生成
 
+状态累积函数的设计问题：
+- 状态需要初始化工作
+- 状态内部分量替换，难点分析
+	- ？形式化描述怎么描述
+	- ？按照执行过程来进行替换，有点像写了一个arm指令模拟执行的解释器
+	- ？带有循环或者分支的代码，中间会有非常复杂的判断
+	- ？汇编代码太长的时候，累积状态的描述也会非常复杂，会影响自动证明
+	- ? 这个替换的过程，可以在C中做，也可以在isabella中做，但是都不太好实现，需要对之前的信息做记录
+-------
+考虑一个顺序的C语言程序
+``` c++
+int main()
+{
+	int a,b,sum,sub;
+	a = 1;
+	b = 2;
+	sum = a + b;
+	sub = a - b;
+	return (sum * sub);
+}
+```
+转换成的汇编为
+``` c
+	.arch armv5t
+	.eabi_attribute 20, 1
+	.eabi_attribute 21, 1
+	.eabi_attribute 23, 3
+	.eabi_attribute 24, 1
+	.eabi_attribute 25, 1
+	.eabi_attribute 26, 2
+	.eabi_attribute 30, 6
+	.eabi_attribute 34, 0
+	.eabi_attribute 18, 4
+	.file "test.c"
+.text
+	.align 2
+	.global main
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type main, %function
+main:
+	@ args = 0, pretend = 0, frame = 16
+	@ frame_needed = 1, uses_anonymous_args = 0
+	@ link register save eliminated.
+	str fp, [sp, #-4]!
+	add fp, sp, #0
+	sub sp, sp, #20
+	mov r3, #1
+	str r3, [fp, #-20]
+	mov r3, #2
+	str r3, [fp, #-16]
+	ldr r2, [fp, #-20]
+	ldr r3, [fp, #-16]
+	add r3, r2, r3
+	str r3, [fp, #-12]
+	ldr r2, [fp, #-20]
+	ldr r3, [fp, #-16]
+	sub r3, r2, r3
+	str r3, [fp, #-8]
+	ldr r3, [fp, #-12]
+	ldr r2, [fp, #-8]
+	mul r1, r2, r3
+	mov r3, r1
+	mov r0, r3
+	add sp, fp, #0
+	@ sp needed
+	ldr fp, [sp], #4
+	bx lr
+	.size main, .-main
+	.ident "GCC: (Ubuntu/Linaro 7.5.0-3ubuntu1~18.04) 7.5.0"
+	.section .note.GNU-stack,"",%progbits
+
+```
+这一段汇编里包含了 `add sub mul mov str ldr bx` 几条指令，寄存器用到了rx通用寄存器，fp，sp栈寄存器，寻址方式包括了寄存器寻址和偏移寻址，这一段汇编比较直接，不详细解释每一行都意义了。
+
+以第一行代码 `str fp, [sp, #-4]!` 为例，首先识别函数parse可以将这一句分解为，str， fp, [sp, #-4]! 三个部分，str只含有一个指令str，没有条件和后缀部分，参数识别为 2 参数指令，第一个是寄存器参数，fp，第二个是寄存器偏移寻址参数，根据str的操作语意，函数gen_str_state_trans生成一个isabella函数，这个函数接受一个state参数，并将state参数里，sp - 4 的值设置成fp，gen_str_lemma是一个证明，证明这个函数对state的改变只有sp - 4 的值是原来的fp值。
+其他行代码同理，目前没有全部完成
+
+[未做] F函数累积状态，替换每一个state的表示到初始的state寄存器和内存表示
+
+
+-----
+### 暂时不考虑
  - 自动证明
 	 + 系统的形式化描述
 	 + 构建辅助定理
@@ -70,6 +158,7 @@ A和B的函数需要对每一条指令都单独设计
 	+ 系统的属性描述
 	+ 汇编的高级语意表示
 	+ 属性描述与汇编高级语意的对应证明（程序正确性证明）
+
 
 
 
